@@ -156,21 +156,12 @@ Idents(sub.scATAC.harmony) <- sub.scATAC.harmony$cellType2
 cellType3 <- sub.scATAC.harmony$cellType2
 cellType3 <- gsub("^C1$", "Unknown", cellType3)
 cellType3 <- gsub("^C2$", "Tissue-resident", cellType3)
-cellType3 <- gsub("^C3$", "Exhausted", cellType3)
+cellType3 <- gsub("^C3$", "Exhaustion", cellType3)
 cellType3 <- gsub("^C4$", "Exhausted IEG.C2", cellType3)
 cellType3 <- gsub("^C5$", "Exhausted IEG.C1", cellType3)
-sub.scATAC.harmony$cellType3 <- factor(cellType3, levels = c("Unknown", "Tissue-resident", "Exhausted IEG.C1", "Exhausted IEG.C2", "Exhausted"))
+sub.scATAC.harmony$cellType3 <- factor(cellType3, levels = c("Unknown", "Tissue-resident", "Exhausted IEG.C1", "Exhausted IEG.C2", "Exhaustion"))
 Idents(sub.scATAC.harmony) <- sub.scATAC.harmony$cellType3
 saveRDS(sub.scATAC.harmony, file = "8.Immune/CD8T/sub.scATAC.harmony.pro.rds")
-
-# cellType <- sub.scATAC.harmony$seurat_clusters
-# cellType <- gsub("^1$", "Exhausted", cellType)
-# cellType <- gsub("^3$", "Exhausted", cellType)
-# cellType <- gsub("^0$", "Tissue-resident/Effect", cellType)
-# cellType <- gsub("^2$", "Unknown", cellType)
-# cellType <- gsub("^4$", "Exhausted IEG", cellType)
-# sub.scATAC.harmony$cellType <- factor(cellType, levels = c("Unknown", "Tissue-resident/Effect", "Exhausted IEG", "Exhausted"))
-# Idents(sub.scATAC.harmony) <- sub.scATAC.harmony$cellType
 
 #### set idents
 sub.scATAC.harmony$cellType <- sub.scATAC.harmony$cellType3
@@ -263,9 +254,9 @@ res <- sapply(features, function(x){
 })
 dev.off()
 
-Unknown.Marker <- c("LEF1", "IL7R", "CCR7", "SELL")
-pdf("8.Immune/CD8T/markerExpression.Unknown.peaks.pdf")
-res <- lapply(Unknown.Marker, function(x){
+Naive.Marker <- c("LEF1", "IL7R", "CCR7", "SELL")
+pdf("8.Immune/CD8T/markerExpression.Naive.peaks.pdf")
+res <- lapply(Naive.Marker, function(x){
   cat(x, "...\n")
   regions <- FindRegion(object = sub.scATAC.harmony, region = x, assay = "Peaks", extend.upstream = 3000, extend.downstream = 3000)
   idx <- data.frame(findOverlaps(regions, promoter))
@@ -291,8 +282,8 @@ res <- lapply(Unknown.Marker, function(x){
 })
 ggarrange(res[[1]], res[[2]], res[[3]], res[[4]], ncol = 2, nrow = 2)
 dev.off()
-pdf("8.Immune/CD8T/markerExpression.Unknown.maker.pdf", height = 2)
-DotPlot(sub.scATAC.harmony, features = c(Unknown.Marker, "IL2RA", "CD44", "CD69", "TOX", "ENTPD1", "PDCD1", "CTLA4", "TIGIT", "LAG3"), cols = c("#1e90ff", "#F15F30"), group.by = "cellType", dot.scale = 3.5) + theme(axis.text.x = element_text(size = 7, angle = 90, hjust = 1), axis.text.y = element_text(size = 8))
+pdf("8.Immune/CD8T/markerExpression.Naive.maker.pdf", height = 2)
+DotPlot(sub.scATAC.harmony, features = c(Naive.Marker, "IL2RA", "CD44", "CD69", "TOX", "ENTPD1", "PDCD1", "CTLA4", "TIGIT", "LAG3"), cols = c("#1e90ff", "#F15F30"), group.by = "cellType", dot.scale = 3.5) + theme(axis.text.x = element_text(size = 7, angle = 90, hjust = 1), axis.text.y = element_text(size = 8))
 dev.off()
 
 DefaultAssay(sub.scATAC.harmony) <- "ACTIVITY"
@@ -325,7 +316,7 @@ signature.genes <- rbind(signature.genes, T.signature3)
 signature.genes <- rbind(signature.genes, T.signature4)
 signature.genes <- rbind(signature.genes, T.signature5)
 signature.genes <- rbind(signature.genes, T.signature6)
-signature.genes <- signature.genes[which(signature.genes$Type %in% c("Unknown", "Effector memory", "Central memory", "Res", "Exh",
+signature.genes <- signature.genes[which(signature.genes$Type %in% c("Naive", "Effector memory", "Central memory", "Res", "Exh",
                                                                      "Cell_stress", "Cytotoxicity Signature", "Exhaustion",
                                                                      "Terminal_differentiation", "Progenitor Exhausted CD8", "Terminally Exhausted CD8")),]
 signature.genes$Type <- gsub("Cytotoxicity Signature", "Cytotoxic", signature.genes$Type)
@@ -410,84 +401,6 @@ p <- ggviolin(group.signature.data, x = "group", y = "value",
           add = "jitter", add.params = list(size = 0.1)) + ylab("Signature score") + xlab("")
 p <- p + rotate_x_text(angle = 45, vjust = 1) + stat_compare_means(aes(group = Type), label = "p.signif")
 print(p)
-dev.off()
-
-##-- 3.Seurat method
-signature.names <- unique(signature.genes$Type)
-signature.list <- lapply(signature.names, function(x){
-    genes <- signature.genes$Gene[which(signature.genes$Type == x)]
-    return(genes)
-})
-names(signature.list) <- signature.names
-sub.scATAC.harmony <- AddModuleScore(sub.scATAC.harmony, features = signature.list)
-idx <- grep("Cluster", colnames(sub.scATAC.harmony@meta.data))
-colnames(sub.scATAC.harmony@meta.data)[idx] <- signature.names
-
-pdf("8.Immune/CD8T/seurat_signatureScore.pdf")
-res <- sapply(signature.names, function(x){
-    p <- VlnPlot(sub.scATAC.harmony, features = x, cols = cellType.colors)
-    print(p)
-})
-signature.scoreMatrix <- sub.scATAC.harmony@meta.data[, signature.names]
-signature.scoreMatrix.mean <- apply(signature.scoreMatrix, 2, function(x){
-    score <- tapply(x, sub.scATAC.harmony$cellType, mean)
-    return(score)
-})
-Heatmap(t(signature.scoreMatrix.mean), width = unit(6, "cm"), height = unit(6, "cm"), name = "Signature score",
-        show_row_dend = F, show_column_dend = F, row_names_gp = gpar(fontsize = 8), column_names_gp = gpar(fontsize = 8))
-signature.scoreMatrix.mean.scale <- scale(signature.scoreMatrix.mean) # 比较某个状态在各个细胞类型的情况
-Heatmap(t(signature.scoreMatrix.mean.scale), width = unit(6, "cm"), height = unit(6, "cm"), name = "Signature score",
-        show_row_dend = F, show_column_dend = F, row_names_gp = gpar(fontsize = 8), column_names_gp = gpar(fontsize = 8))        
-FeaturePlot(sub.scATAC.harmony, features = signature.names, cols = c("lightgrey", "red"), ncol = 2)
-
-plot.list <- lapply(signature.names, function(x){
-    my_comparisons <- list(c("Effector memory", "Exhausted IEG.C1"), c("Exhausted IEG.C1", "Exhausted IEG.C2"), c("Exhausted IEG.C2", "Terminal Exhaustion"), 
-                           c("Effector memory", "Terminal Exhaustion"))
-    p <- VlnPlot(sub.scATAC.harmony, features = x, y.max = max(sub.scATAC.harmony@meta.data[,x])+0.2) + xlab("") + stat_compare_means(comparisons = my_comparisons, label = "p.signif") + NoLegend()
-    return(p)
-})
-p <- ggarrange(plotlist = plot.list[1:4],ncol = 2, nrow = 2)
-print(p)
-p <- ggarrange(plotlist = plot.list[5:8],ncol = 2, nrow = 2)
-print(p)
-p <- ggarrange(plotlist = plot.list[9],ncol = 2, nrow = 2)
-print(p)
-# comparision within progenitor exhaustion
-group.signature <- sub.scATAC.harmony@meta.data[, c("Progenitor Exhaustion", "Terminal Exhaustion")]
-group.signature <- as.data.frame(scale(group.signature))
-group.signature$group <- factor(sub.scATAC.harmony$cellType, levels = c("C1", "C2", "C3", "C4", "C5"))
-group.signature.data <- pivot_longer(group.signature, cols = 1:2, names_to = "Type")
-p <- ggviolin(group.signature.data, x = "group", y = "value",
-          color = "Type", palette = c("#00A087FF", "#F39B7FFF"), fill = "white",
-          add = "jitter", add.params = list(size = 0.1)) + ylab("Signature score") + xlab("")
-p <- p + rotate_x_text(angle = 45, vjust = 1) + stat_compare_means(aes(group = Type), label = "p.signif")
-print(p)
-dev.off()
-
-##-- signature genes 
-T.exp.matrix <- GetAssayData(sub.scATAC.harmony, slot = "data")
-signature.genes <- read.table("/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA/5.Immune/CD8T/T.functionalState.txt", header = T, stringsAsFactors = F, sep = "\t")
-index <- match(signature.genes$Gene, rownames(T.exp.matrix))
-signature.exp.matrix <- T.exp.matrix[na.omit(index),]
-signature.genes <- signature.genes[which(!is.na(index)),]
-#取各个cluster的平均
-signature.MeanExp <- apply(signature.exp.matrix, 1, function(x){
-    a <- tapply(x, sub.scATAC.harmony$cellType, mean)
-    return(a)
-})
-#minimum-to-maximum scale
-signature.MeanExp.normalize <- t(decostand(signature.MeanExp, "range", 2))
-signature.MeanExp.zscore <- t(scale(signature.MeanExp))
-colnames(signature.MeanExp.normalize) <- paste0("C", colnames(signature.MeanExp.normalize))
-#row_split <- factor(signature.genes$Type, levels = unique(signature.genes$Type))
-pdf("8.Immune/CD8T/Tsignature.gene.expression.pdf")
-Heatmap(t(signature.MeanExp), name = "Expression", cluster_columns = T, cluster_rows = F, show_column_dend = F, row_names_gp = gpar(fontsize = 6), column_names_gp = gpar(fontsize = 8), width = unit(4, "cm"), height = unit(12, "cm"))
-Heatmap(signature.MeanExp.zscore, name = "Expression", cluster_columns = T, cluster_rows = F, show_column_dend = F, row_names_gp = gpar(fontsize = 6), column_names_gp = gpar(fontsize = 8), width = unit(4, "cm"), height = unit(12, "cm"))
-Heatmap(signature.MeanExp.normalize, name = "Expression", cluster_columns = T, cluster_rows = F, show_column_dend = F, row_names_gp = gpar(fontsize = 6), column_names_gp = gpar(fontsize = 8), width = unit(4, "cm"), height = unit(12, "cm"),
-        heatmap_legend_param = list(
-                title = "Expression", at = c(0, 1), 
-                labels = c("min", "max")),
-        )
 dev.off()
 
 ####----------------------------------------------------- 4. peak and motif analysis

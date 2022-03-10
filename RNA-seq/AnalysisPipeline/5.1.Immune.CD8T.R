@@ -91,22 +91,12 @@ sub.scRNA.harmony$cellType2 <- factor(sub.scRNA.harmony$cellType2, levels = c("C
 cellType3 <- sub.scRNA.harmony$cellType2
 cellType3 <- gsub("^C1$", "Exhausted IEG", cellType3)
 cellType3 <- gsub("^C2$", "Tissue-resident.C1", cellType3)
-cellType3 <- gsub("^C3$", "Exhausted", cellType3)
+cellType3 <- gsub("^C3$", "Exhaustion", cellType3)
 cellType3 <- gsub("^C4$", "Tissue-resident.C2", cellType3)
-sub.scRNA.harmony$cellType3 <- factor(cellType3, levels = c("Tissue-resident.C1", "Tissue-resident.C2", "Exhausted IEG", "Exhausted"))
+sub.scRNA.harmony$cellType3 <- factor(cellType3, levels = c("Tissue-resident.C1", "Tissue-resident.C2", "Exhausted IEG", "Exhaustion"))
 Idents(sub.scRNA.harmony) <- sub.scRNA.harmony$cellType3
 saveRDS(sub.scRNA.harmony, file = "5.Immune/CD8T/sub.scRNA.harmony.pro.rds")
 
-cellType3 <- sub.scRNA.harmony$cellType2
-cellType3 <- gsub("^C2$", "Effector memory", cellType3)
-cellType3 <- gsub("^C1$", "Exhausted", cellType3)
-cellType3 <- gsub("^C3$", "Terminally exhausted", cellType3)
-cellType3 <- gsub("^C4$", "Exhausted", cellType3)
-sub.scRNA.harmony$cellType3 <- factor(cellType3, levels = c("Effector memory", "Exhausted", "Terminally exhausted"))
-
-#### set Idents
-sub.scRNA.harmony$cellType <- sub.scRNA.harmony$cellType3
-Idents(sub.scRNA.harmony) <- sub.scRNA.harmony$cellType
 cellType.colors <- c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")
 
 DefaultAssay(sub.scRNA.harmony) <- "RNA"
@@ -312,7 +302,7 @@ pdf("5.Immune/CD8T/DEGs.survival.pdf")
 TCGA.Tissue.resident.C1 <- analysis.diff.survival.TCGA(interest.gene = DEGs[["Tissue-resident.C1"]], diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Tissue-resident.C1", Box.plot = F, meta.signature = T, single.signature = F)
 TCGA.Tissue.resident.C2 <- analysis.diff.survival.TCGA(interest.gene = DEGs[["Tissue-resident.C2"]], diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Tissue-resident.C2", Box.plot = F, meta.signature = T, single.signature = F)
 TCGA.Exhausted.IEG <- analysis.diff.survival.TCGA(interest.gene = DEGs[["Exhausted IEG"]], diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Exhausted IEG", Box.plot = F, meta.signature = T, single.signature = F)
-TCGA.Exhausted <- analysis.diff.survival.TCGA(interest.gene = DEGs[["Exhausted"]], diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Exhausted", Box.plot = F, meta.signature = T, single.signature = F)
+TCGA.Exhaustion <- analysis.diff.survival.TCGA(interest.gene = DEGs[["Exhaustion"]], diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Exhausted", Box.plot = F, meta.signature = T, single.signature = F)
 dev.off()
 
 ##### ICB survial

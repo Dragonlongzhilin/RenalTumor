@@ -45,7 +45,7 @@ DefaultAssay(sub.scRNA.harmony) <- "RNA"
 ####--------------------------------------------------------------------------- 5. TF regulated network
 library(ggseqlogo)
 interest.genes <- "CD27"
-celltype <- "Exhausted"
+celltype <- "Exhaustion"
 
 # motif information
 motif.info <- data.frame(originName = names(sub.scATAC.harmony@assays$Peaks@motifs@motif.names), TF = unlist(sub.scATAC.harmony@assays$Peaks@motifs@motif.names))
