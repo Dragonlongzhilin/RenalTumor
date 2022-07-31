@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' @description: peak annotation and enrichment analysis
 
 ##参考：
