@@ -200,9 +200,7 @@ write.xlsx(res$Tumor, file = "4.Peak/bed/GREAT.Tumor.xlsx", sheetName = names(re
 
 ####plot --- tumor.up
 tumor.up.proximal <- res$Tumor$up_proximalPeaks_enrich
-tumor.up.proximal <- tumor.up.proximal[c(7, 12, 13, 14, 15),]
 tumor.up.distal <- res$Tumor$up_distalPeaks_enrich
-tumor.up.distal <- tumor.up.distal[c(5, 9, 13, 14, 15),]
 # tumor.up.proximal$Hyper_Fold_Enrichment <- log2(tumor.up.proximal$Hyper_Fold_Enrichment)
 # tumor.up.distal$Hyper_Fold_Enrichment <- log2(tumor.up.distal$Hyper_Fold_Enrichment)
 pdf("4.Peak/bed/GREAT.Tumor.selection.pdf", height = unit(5, "inches"))
