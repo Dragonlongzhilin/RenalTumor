@@ -49,12 +49,6 @@ pdf("2.Cluster/Harmony.integration.PC15.pdf")
 Harmony.scATAC.PC15 <- Harmony.integration.reduceDimension(scATAC.object = scATAC.merge.pro, set.resolutions = seq(0.2, 1.2, by = 0.1), groups = "dataset", assay = "ATAC", PC = 15, npcs = 30)
 dev.off()
 saveRDS(Harmony.scATAC.PC15, file = "Harmony.scATAC.PC15.rds")
-
-pdf("2.Cluster/Seurat.integration.PC15.pdf")
-seurat.integrated.scATAC.PC15 <- Seurat.integration.reduceDimension(scATAC.object = scATAC.merge.pro, set.resolutions = seq(0.2, 1.2, by = 0.1), groups = "dataset", assay = "ATAC", PC = 15)
-dev.off()
-saveRDS(seurat.integrated.scATAC.PC15, file = "seurat.integrated.scATAC.PC15.rds")
-
 #####################3.gene activity########################
 #PC 15
 gene.activities <- GeneActivity(Harmony.scATAC.PC15)
@@ -67,14 +61,3 @@ Harmony.scATAC.PC15 <- NormalizeData(
   scale.factor = median(Harmony.scATAC.PC15$nCount_ATAC)
 )
 saveRDS(Harmony.scATAC.PC15, file = "Harmony.scATAC.PC15.rds")
-
-gene.activities <- GeneActivity(seurat.integrated.scATAC.PC15)
-# add the gene activity matrix to the Seurat object as a new assay and normalize it
-seurat.integrated.scATAC.PC15[['ACTIVITY']] <- CreateAssayObject(counts = gene.activities)
-seurat.integrated.scATAC.PC15 <- NormalizeData(
-  object = seurat.integrated.scATAC.PC15,
-  assay = 'ACTIVITY',
-  normalization.method = 'LogNormalize',
-  scale.factor = median(seurat.integrated.scATAC.PC15$nCount_ATAC)
-)
-saveRDS(seurat.integrated.scATAC.PC15, file = "seurat.integrated.scATAC.PC15.rds")
