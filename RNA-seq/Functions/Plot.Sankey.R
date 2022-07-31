@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #'@param data: data.frame, store three columns
 #ALX3 CYB5A 1
 #HESX1 CYB5A 1
