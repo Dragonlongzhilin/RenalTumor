@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' @description: peak annotation with geneHancer
 
 # this script will create a list of regions 50kb upstream and downstream of cell-type-specific DAR
