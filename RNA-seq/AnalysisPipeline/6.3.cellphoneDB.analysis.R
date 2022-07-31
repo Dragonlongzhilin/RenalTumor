@@ -344,14 +344,6 @@ saveRDS(total.interaction, file = "Tumor/tumor.interaction.number.rds")
 #### Interaction between cancer cells and other cells
 #Screening significant interaction pairs-ligand
 selected_rows <- unique(tumor$All$interacting_pair[which(tumor$All$means>=mean.threshold & tumor$All$pvals<pval.threshold)])
-
-idx <- which(selected_rows %in% c("VEGFA_FLT1", "NRP1_VEGFA", "SPP1_CD44", "C5AR1_RPS19", "HLA-E_KLRD1", "EGFR_VEGFA", "VEGFA_GPC1",
-                                  "CXCL8_SDC2", "APOE_TREM2", "APOE_VLDLR", "EGFR_VEGFA",
-                                  "IL1B_SIGIRR", "HMGB1_CD163", "HLA-E_KLRK1", "CXCL8_ACKR1", "CXCL2_DPP4", "CD24_SIGLEC10", "CD14-RIPK1",
-                                  "APOC1_VLDLR", "CXCL8_KDR", "CXCL8_CD79A", "CD27_CD70", "CD2_CD48", "HMMR_CALM1", "APP_NOTCH2",
-                                  "CD44_TIMP3", "TLR4_HMGB1", "CD74_MIF", "MIF_CXCR4", "VEGFA_KDR", "VEGFA_EPHB2"))
-selected_rows <- selected_rows[idx]
-
 selected_columns <- sort(unique(as.character(tumor$All$CC)))
 pdf("Tumor/tumor.sig.interaction.pdf")
 p1 <- dot_plot(selected_rows = selected_rows, selected_columns = selected_columns, 
@@ -400,14 +392,6 @@ track.matrix <- matrix(c(rep(0, nrow(total.interaction)), total.interaction$numb
 rownames(track.matrix) <- total.interaction[,1]
 track.matrix <- track.matrix[order.value,]
 
-pdf("Tumor/tumor.interaction.circular.pdf")
-plot.circular(track.matrix = track.matrix, gene.pair = c("CD24", "SIGLEC10"), mypvals = mypvals.usr, mymeans = mymeans.usr)
-plot.circular(track.matrix = track.matrix, gene.pair = c("APOE", "TREM2"), mypvals = mypvals.usr, mymeans = mymeans.usr)
-plot.circular(track.matrix = track.matrix, gene.pair = c("APOC1", "VLDLR"), mypvals = mypvals.usr, mymeans = mymeans.usr)
-plot.circular(track.matrix = track.matrix, gene.pair = c("CXCL2", "DPP4"), mypvals = mypvals.usr, mymeans = mymeans.usr)
-dev.off()
-
-
 ###########################Tumor VS TAM
 tumor_TAM <- tumor$All[grep("TAM", tumor$All$CC),]
 selected_rows <- unique(tumor_TAM$interacting_pair[which(tumor_TAM$means>=mean.threshold & tumor_TAM$pvals<pval.threshold)])
@@ -439,13 +423,6 @@ interaction.info <- sapply(selected_rows, function(x){
 
 idx <- which(interaction.info == "ok")
 selected_rows <- selected_rows[idx]
-idx <- which(selected_rows %in% c("ITGB2_VCAM1", "ITGB1_TIMP2", "CD99_CD81","TIMP1_CD63", "ITGB1_SPP1", "ITGA5_SPP1", "ITGB1_VEGFA", "CP_SLC40A1", "EGFR_ANXA1",
-                                  "EGFR_MIF", "EGFR_S100A4", "EGFR_GSTP1", "IL1B_SIGIRR", "C3_CD81", "ITGB1_CD14", "ITGB2_CD14", "APOE_SDC2", "APOE_SORL1",
-                                  "TNFRSF1B_GRN", "VEGFA_ITGA9", "SPP1_ITGA4", "SPP1_PTGER4", "S100A8_CD68", "S100A9_CD68", "HSPA8_LRP2",
-                                  "TLR4_HSPA1A", "PKM_CD44", "SPP1_ITGA9", "ITGB1_LGALS1", "EGFR_GRN", "FN1_PLAUR", "CXCL14_CXCR4", "CXCL8_SDC2"))
-selected_rows <- selected_rows[-idx]
-selected_rows <- unique(c(selected_rows, "CD24_SIGLEC10", "C5AR1_RPS19", "HLA-F_B2M", "CXCL2_DPP4", "C1QB_LRP1", "PSAP_LRP1", "CD74_APP",
-                   "INSR_NAMPT", "CXCL8_SDC2", "VEGFA_EPHB2", "SPP1_CD44", "EGFR_HSP90AA1", "ITGB1_CD14", "CD14_ITGA4", "APOE_LRP2", "APOE_LSR", "APOE_LRP1"))
 a <- apply(tumor_TAM, 1, function(x){
     b <- unlist(str_split(as.character(x[4]), "\\|"))
     if((x[3]=="Ligand" & b[1]=="Tumor")|(x[3]=="Receptor" & b[2]=="Tumor")){
@@ -500,21 +477,6 @@ names(features.list) <- features
 cox.res <- RCC.icb.analysis(signature.list = features.list, expresionMatrix = normalized_expression, clincal.info = patient.info.RNA)
 dev.off()
 
-pdf("Tumor/Myeloid/tumor-TAM.interaction.circular.pdf")
-plot.circular(track.matrix = track.matrix, gene.pair = c("FN1", "PLAUR"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))
-plot.circular(track.matrix = track.matrix, gene.pair = c("VIM", "CD44"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))
-plot.circular(track.matrix = track.matrix, gene.pair = c("C5AR1", "RPS19"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))              
-dev.off()
-
 ###########################Tumor VS T cell
 tumor_lymphoid <- tumor$All[grep("Proliferative T cell|Treg|Exhausted", tumor$All$CC),]
 selected_rows <- unique(tumor_lymphoid$interacting_pair[which(tumor_lymphoid$means>=mean.threshold & tumor_lymphoid$pvals<pval.threshold)])
@@ -539,16 +501,6 @@ interaction.info <- sapply(selected_rows, function(x){
 })
 idx <- which(interaction.info == "ok")
 selected_rows <- selected_rows[idx]
-
-idx <- which(selected_rows %in% c("ITGAV_VEGFA", "ITGB1_VCAM1", "ITGB2_VCAM1", "TIMP1_CD63", "SPP1_PTGER4", "ITGA5_SPP1", "ARPC5_LRP2", "CD3G_B2M", "SPP1_ITGA4",
-                                  "EGFR_S100A4", "ERBB2_S100A4", "SPP1_ITGA4", "S100A8_CD69", "PKM_CD44", "CD74_MIF", "PTPRC_LGALS1",
-                                  "PTPRC_LGALS1", "RPSA_LAMB2", "HSP90AA1_LRP1", "CD3D_B2M", "CD3G_B2M", "TFRC_B2M", "CD247_B2M", "EGFR_CALM2",
-                                  "HLA-F_B2M", "MIF_CXCR4", "MIF_CD44", "CD2_CD58", "EGFR_MIF", "VIM_CD44", "HSPA8_LRP2", "CALR_HLA-F", "HMMR_CALM1",
-                                  "CALM1_FAS", "CALM2_AQP1", "EGFR_HSP90AA1", "ERBB2_HSP90AA1", "TGFB1_CXCR4", "EGFR_CALM1", "EZR_VCAM1"))
-selected_rows <- selected_rows[-idx]
-selected_rows <- unique(c(selected_rows, "CD27_CD70", "CD2_CD59", "CD2_CD48", "NRP1_VEGFA", "SPP1_CD44", "HLA-F_B2M", "EGFR_MIF",
-                  "CD74_APP", "VEGFA_FLT1", "LTBR_LTB", "ITGB1_SPP1", "TFRC_B2M", "EGFR_HSP90AA1"))
-
 a <- apply(tumor_lymphoid, 1, function(x){
     b <- unlist(str_split(as.character(x[4]), "\\|"))
     if((x[3]=="Ligand" & b[1]=="Tumor")|(x[3]=="Receptor" & b[2]=="Tumor")){
@@ -573,25 +525,6 @@ p1 <- dot_plot(selected_rows = selected_rows2, selected_columns = unique(selecte
                breaks = c(-2, -1, 0, 1, 2), limit = c(-2, 2), legend.key.size = unit(0.1, "inches"), order.column = c("Tumor|CD8+ T-Exhausted", "Tumor|Proliferative T cell", "Tumor|Treg"),
                size = 8, max.dot.size = 4, means_path = "Renal/mymeans.usr.txt", pvalues_path = "Renal/mypvals.usr.txt")
 print(p1)
-dev.off()
-
-pdf("Tumor/Lymphoid/tumor-lymphoid.interaction.circular.pdf")
-plot.circular(track.matrix = track.matrix, gene.pair = c("TGFB1", "CXCR4"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold = pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))
-plot.circular(track.matrix = track.matrix, gene.pair = c("CCL5", "SDC4"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold = pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))
-plot.circular(track.matrix = track.matrix, gene.pair = c("CD27", "CD70"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))
-plot.circular(track.matrix = track.matrix, gene.pair = c("LTBR", "LTB"), 
-              mypvals = mypvals.usr, mymeans = mymeans.usr, 
-              means.threshold = mean.threshold, pval.threshold,
-              High.low = T, colors = c("#D95319", "#3B6793"))                                                
 dev.off()
 
 pdf("Tumor/Lymphoid/interested.interaction.pairs.pdf")
