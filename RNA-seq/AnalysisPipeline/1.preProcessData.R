@@ -263,71 +263,7 @@ dev.off()
 
 ##############################################3.correct batch effect
 source(file = "/home/longzhilin/Analysis_Code/SingleCell/scRNA.Integrate.multipleSample.R")
-#### SCT 3000; PC 50
-pdf("2.Cluster/SCT.Harmony.Integration.PC50.feature3000-test.pdf")
-data.merge.harmony.PC50.SCT <- Harmony.integration.reduceDimension(seurat.object = data.merge, assay = "SCT", set.resolutions = seq(0.2, 1.2, by = 0.1), PC = 50, nfeatures = 3000, npcs = 50)
-dev.off()
-saveRDS(data.merge.harmony.PC50.SCT, file = "data.merge.harmony.PC50.SCT.feature3000.rds")
-
 pdf("2.Cluster/SCT.Harmony.Integration.PC40.feature3000.pdf")
 data.merge.harmony.PC40.SCT <- Harmony.integration.reduceDimension(seurat.object = data.merge, assay = "SCT", set.resolutions = seq(0.2, 1.2, by = 0.1), PC = 40, nfeatures = 3000, npcs = 50)
 dev.off()
 saveRDS(data.merge.harmony.PC40.SCT, file = "data.merge.harmony.PC40.SCT.feature3000.rds")
-
-pdf("2.Cluster/SCT.Harmony.Integration.PC30.feature3000.pdf")
-data.merge.harmony.PC30.SCT <- Harmony.integration.reduceDimension(seurat.object = data.merge, assay = "SCT", set.resolutions = seq(0.2, 1.2, by = 0.1), PC = 30, nfeatures = 3000, npcs = 50)
-dev.off()
-saveRDS(data.merge.harmony.PC30.SCT, file = "data.merge.harmony.PC30.SCT.feature3000.rds")
-
-#### FindVariableFeatures 3000; PC 50
-pdf("2.Cluster/Stardard.Harmony.Integration.PC50.feature3000.pdf")
-data.merge.harmony.PC50.stardard <- Harmony.integration.reduceDimension(seurat.object = data.merge, assay = "RNA", set.resolutions = seq(0.2, 1.2, by = 0.1), PC = 50, nfeatures = 3000, npcs = 50)
-dev.off()
-saveRDS(data.merge.harmony.PC50.stardard, file = "data.merge.harmony.stardard.PC50.feature3000.rds")
-
-pdf("2.Cluster/Stardard.Harmony.Integration.PC30.feature3000.pdf")
-data.merge.harmony.PC30.stardard <- Harmony.integration.reduceDimension(seurat.object = data.merge, assay = "RNA", set.resolutions = seq(0.2, 1.2, by = 0.1), PC = 30, nfeatures = 3000, npcs = 50)
-dev.off()
-saveRDS(data.merge.harmony.PC30.stardard, file = "data.merge.harmony.stardard.PC30.feature3000.rds")
-
-
-#############################################4.Determine the best classification model
-#Harmony
-DefaultAssay(data.merge.harmony.PC50.stardard) <- "RNA"
-DefaultAssay(data.merge.harmony.PC50.SCT) <- "RNA"
-features <- c("CA9", "PECAM1", "MKI67", "CD8A", "CD4", "IL7R", "KLRD1", "FOXP3", "MS4A1", "IGKC", "CD68", "CD163", "CD14")
-pdf("2.Cluster/AnnotateCellType/initial.cluster.harmony.stardard.pdf")
-res <- sapply(features, function(x){
-    p <- FeaturePlot(data.merge.harmony.PC50.stardard, features = x, cols = c("lightgrey", "red"), reduction = 'umap') 
-    print(p)
-    p <- FeaturePlot(data.merge.harmony.PC50.stardard, features = x, cols = c("lightgrey", "red"), reduction = 'tsne') 
-    print(p)
-})
-dev.off()
-pdf("2.Cluster/AnnotateCellType/initial.cluster.harmony.SCT.pdf")
-res <- sapply(features, function(x){
-    p <- FeaturePlot(data.merge.harmony.PC50.SCT, features = x, cols = c("lightgrey", "red"), reduction = 'umap') 
-    print(p)
-    p <- FeaturePlot(data.merge.harmony.PC50.SCT, features = x, cols = c("lightgrey", "red"), reduction = 'tsne') 
-    print(p)
-})
-dev.off()
-#Seurat
-DefaultAssay(data.merge.seurat.PC50.stardard) <- "RNA"
-DefaultAssay(data.merge.seurat.PC50.SCT) <- "RNA"
-pdf("2.Cluster/AnnotateCellType/initial.cluster.seurat.stardard.pdf")
-res <- sapply(features, function(x){
-    p <- FeaturePlot(data.merge.seurat.PC50.stardard, features = x, cols = c("lightgrey", "red"), reduction = 'umap') 
-    print(p)
-    p <- FeaturePlot(data.merge.seurat.PC50.stardard, features = x, cols = c("lightgrey", "red"), reduction = 'tsne') 
-    print(p)
-})
-dev.off()
-pdf("2.Cluster/AnnotateCellType/initial.cluster.seurat.SCT.pdf")
-res <- sapply(features, function(x){
-    p <- FeaturePlot(data.merge.seurat.PC50.SCT, features = x, cols = c("lightgrey", "red"), reduction = 'umap') 
-    print(p)
-    p <- FeaturePlot(data.merge.seurat.PC50.SCT, features = x, cols = c("lightgrey", "red"), reduction = 'tsne') 
-    print(p)
-})
-dev.off()
