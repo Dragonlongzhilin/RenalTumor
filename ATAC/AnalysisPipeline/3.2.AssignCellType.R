@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' @description cell type annotation
 
 library(Signac)
