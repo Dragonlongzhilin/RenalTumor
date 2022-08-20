@@ -1,6 +1,6 @@
 #' @description: peak annotation and enrichment analysis
 
-##参考：
+##reference：
 #https://hbctraining.github.io/Intro-to-ChIPseq/lessons/12_functional_analysis.html
 #http://bioconductor.org/packages/devel/bioc/vignettes/ChIPseeker/inst/doc/ChIPseeker.html
 library(Signac)
@@ -64,7 +64,7 @@ cellType.gr.list <- lapply(idents, function(x){
 })
 names(cellType.gr.list) <- idents
 
-#各个细胞类型DAR的注释信息
+#annotated DAR for each cell type
 DAR.anno.list <- lapply(cellType.gr.list, function(x){
     DAR.cell <- annotatePeak(x, tssRegion=c(-3000, 3000), TxDb = txdb, annoDb="org.Hs.eg.db")
     return(DAR.cell)
