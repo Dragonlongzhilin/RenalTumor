@@ -279,35 +279,3 @@ res <- apply(overlap.ratio, 2, function(x){
 })
 rownames(res) <- c("min", "max", "mean", "sd")
 write.xlsx(list(overlap.ratio, res), file = "4.Peak/overlap.ratio.xlsx", sheetName = c("overlap of DEGs and DARs", "Statistics"), rowNames = T)
-
-############################# cell type sepecific peaks
-scRNA.data <- readRDS("/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA/data.merge.pro.rds")
-DefaultAssay(scRNA.data) <- "RNA"
-# 展示top5
-pdf("4.Peak/cell.type.sepecific.peaks.pdf")
-res <- sapply(names(saveFormat),function(x){
-  cat("Ploting", x, " top 5 peaks\n")
-  y <- saveFormat[[x]]
-  top5 <- y$genomicRegion[1:5]
-  top5.gene <- y$gene[1:5]
-
-  for(i in 1:length(top5)){
-    cat("Plot: ", top5[i], "\n")
-    p <- CoveragePlot(object = scATAC.data,
-                   region = top5[i],
-                   assay = "Peaks",
-                   annotation = TRUE,
-                   extend.upstream = 5000,
-                   extend.downstream = 5000,
-                   peaks = TRUE)
-    p <- p + ggtitle(paste0(x," ", top5[i]))
-    print(p)
-
-    idx <- match(top5.gene[i], rownames(scRNA.data))
-    if(!is.na(idx)){
-      p <- VlnPlot(scRNA.data, pt.size = 0, features = top5.gene[i], group.by = "cellType_low") + xlab("") + NoLegend() + ggtitle(paste0(x," ", top5.gene[i]))
-      print(p)
-    }
-  }
-})
-dev.off()
