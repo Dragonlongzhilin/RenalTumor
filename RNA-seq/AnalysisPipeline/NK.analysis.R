@@ -15,11 +15,6 @@ set.seed(101)
 library(future)
 plan("multiprocess", workers = 5) 
 options(future.globals.maxSize = 50000 * 1024^2) # set 50G RAM
-source(file = "/home/longzhilin/Analysis_Code/Visualization/colorPalettes.R")
-source(file = "/home/longzhilin/Analysis_Code/SingleCell/scRNA.Integrate.multipleSample.R")
-source(file = "/home/longzhilin/Analysis_Code/Combined.P.FC.R")
-source(file = "/home/longzhilin/Analysis_Code/SingleCell/variableFeatureSelection.R")
-source(file = "/home/longzhilin/Analysis_Code/code/ratio.plot.R")
 set.resolutions <- seq(0.1, 0.8, by = 0.1)
 
 setwd(dir = "/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA")
