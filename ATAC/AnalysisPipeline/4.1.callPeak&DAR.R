@@ -15,8 +15,6 @@ library(ComplexHeatmap)
 library(circlize)
 library(openxlsx)
 
-source(file = "/home/longzhilin/Analysis_Code/Visualization/colorPalettes.R")
-source(file = "/home/longzhilin/Analysis_Code/Combined.P.FC.R")
 setwd("/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scATAC")
 
 scATAC.data <- readRDS("scATAC.data.rds")
@@ -187,13 +185,11 @@ cellType.DARs <- FindAllMarkers(scATAC.data,
 cf <- ClosestFeature(scATAC.data, regions = rownames(cellType.DARs)) # Find the closest feature to a given set of genomic regions
 cellType.DARs <- cbind(cellType.DARs, gene=cf$gene_name, gene_biotype = cf$gene_biotype, type = cf$type, distance=cf$distance)
 colnames(cellType.DARs)[6:7] <- c("cellType", "genomicRegion")
-pi <- Combined.P.FC(cellType.DARs[,c("avg_log2FC", "p_val_adj")], log10P = F)
-cellType.DARs$pi <- pi$pi
 saveFormat <- lapply(idents, function(x){
   index <- which(cellType.DARs$cellType == x)
   DARs <- cellType.DARs[index,]
-  DARs.up <- DARs %>% filter(avg_log2FC>0) %>% arrange(desc(pi))
-  DARs.down <- DARs %>% filter(avg_log2FC<0) %>% arrange(pi)
+  DARs.up <- DARs %>% filter(avg_log2FC>0) %>% arrange(desc(avg_log2FC))
+  DARs.down <- DARs %>% filter(avg_log2FC<0) %>% arrange(avg_log2FC)
   DARs <- rbind(DARs.up, DARs.down)
   return(DARs)
 })
