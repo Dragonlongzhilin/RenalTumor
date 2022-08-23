@@ -196,12 +196,12 @@ saveFormat <- lapply(idents, function(x){
 write.xlsx(saveFormat, file = "4.Peak/celltype.all.DARs.xlsx", sheetName = idents, rowNames = F)
 saveRDS(cellType.DARs, file = "4.Peak/cellType.all.DARs.rds")
 
-#require logfc.threshold = 0.25 & p_val_adj < 0.05
-cellType.sig.pos.DARs <- cellType.DARs %>% filter(avg_log2FC >=0.25 & p_val_adj < 0.05) %>% arrange(desc(pi)) # 31925 peaks
+#require logfc.threshold >= 0.25 & p_val_adj < 0.05
+cellType.sig.pos.DARs <- cellType.DARs %>% filter(avg_log2FC >=0.25 & p_val_adj < 0.05) %>% arrange(desc(avg_log2FC)) # 31925 peaks
 saveFormat <- lapply(idents, function(x){
   index <- which(cellType.sig.pos.DARs$cellType == x)
   DARs <- cellType.sig.pos.DARs[index,]
-  DARs <- DARs %>% arrange(desc(pi))
+  DARs <- DARs %>% arrange(desc(avg_log2FC))
   return(DARs)
 })
 names(saveFormat) <- idents
