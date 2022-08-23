@@ -15,7 +15,6 @@ library(future)
 plan("multiprocess", workers = 10) 
 options(future.globals.maxSize = 50000 * 1024^2) # set 50G RAM
 setwd(dir = "/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA")
-source(file = "/home/longzhilin/Analysis_Code/Combined.P.FC.R")
 source(file = "/home/longzhilin/Analysis_Code/Visualization/colorPalettes.R")
 source(file = "/home/longzhilin/Analysis_Code/code/ratio.plot.R")
 
@@ -82,7 +81,7 @@ a <- sapply(enrich.list.select, function(x){nrow(x)})
 enrich.res$Type <- c(rep("Endothelium (VCAM1+) ", as.numeric(a[1])), rep("Endothelium (VCAM1-) ", as.numeric(a[2])))
 enrich.res$p.adjust <- -log10(enrich.res$p.adjust)
 
-#处理名字
+# process gene name
 enrich.res$ID <- gsub("_", " ", enrich.res$ID)
 # factor ID
 idx1 <- na.omit(match(enrich$up, enrich.path))
