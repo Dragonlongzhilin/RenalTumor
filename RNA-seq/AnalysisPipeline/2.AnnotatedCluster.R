@@ -15,8 +15,6 @@ library(future)
 plan("multiprocess", workers = 10) 
 options(future.globals.maxSize = 50000 * 1024^2) # set 50G RAM
 setwd(dir = "/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA")
-source(file = "/home/longzhilin/Analysis_Code/Combined.P.FC.R")
-source(file = "/home/longzhilin/Analysis_Code/Visualization/colorPalettes.R")
 source(file = "/home/longzhilin/Analysis_Code/code/ratio.plot.R")
 
 #### Harmony corrected result
@@ -177,7 +175,7 @@ saveFormat <- lapply(idents, function(x){
 write.xlsx(saveFormat, file = "2.Cluster/AnnotateCellType/celltype.all.DEGs.xlsx", sheetName = idents, rowNames = F)
 saveRDS(cellType.all.markers, file = "2.Cluster/AnnotateCellType/cellType.all.DEGs.rds")
 
-#require logfc.threshold = 0.25 & p_val_adj < 0.05
+#require logfc.threshold >= 0.25 & p_val_adj < 0.05
 cellType.sig.DEGs <- cellType.all.markers %>% filter(avg_log2FC >=0.25 & p_val_adj < 0.05) %>% arrange(desc(avg_log2FC))
 saveFormat <- lapply(idents, function(x){
   index <- which(cellType.sig.DEGs$cluster == x)
