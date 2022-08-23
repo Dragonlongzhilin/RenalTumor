@@ -15,7 +15,6 @@ plan("multiprocess", workers = 4)
 options(future.globals.maxSize = 50000 * 1024^2) #50G
 library(GenomicRanges)
 library(ggpubr)
-source("/home/longzhilin/Analysis_Code/Visualization/colorPalettes.R")
 source("/home/longzhilin/Analysis_Code/SingleCell/scATAC.Integrate.multipleSample.R")
 setwd("/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scATAC")
 
