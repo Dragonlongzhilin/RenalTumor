@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 #' @description: construct the TF regulatory network
 
 library(Signac)
