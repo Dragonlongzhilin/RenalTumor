@@ -291,9 +291,6 @@ tumor.res <- sapply(set.resolutions, function(x){
 dev.off()
 
 source(file = "/home/longzhilin/Analysis_Code/SingleCell/scRNA.Integrate.multipleSample.R")
-source(file = "/home/longzhilin/Analysis_Code/Combined.P.FC.R")
-source(file = "/home/longzhilin/Analysis_Code/SingleCell/variableFeatureSelection.R")
-source(file = "/home/longzhilin/Analysis_Code/code/ratio.plot.R")
 # split the dataset into a list of two seurat objects (stim and CTRL)
 tumor.list <- SplitObject(tumors, split.by = "orig.ident")
 tumor.list <- lapply(X = tumor.list, FUN = function(x) {
