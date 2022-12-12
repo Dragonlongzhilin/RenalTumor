@@ -24,7 +24,7 @@ source(file = "/home/longzhilin/Analysis_Code/code/ratio.plot.R")
 data.merge <- readRDS("data.merge.pro.rds")
 DefaultAssay(data.merge) <- "RNA"
 cell.Type <- c("Macrophage")
-sub.scRNA <- subset(data.merge, subset = cellType == cell.Type)
+sub.scRNA <- subset(data.merge, subset = cellType_low == cell.Type)
 sub.scRNA <- DietSeurat(sub.scRNA, assays = "RNA")
 index <- match(paste0("SCT_snn_res.", seq(0.2, 1.2, by=0.1)), colnames(sub.scRNA@meta.data))
 sub.scRNA@meta.data <- sub.scRNA@meta.data[,-index]
