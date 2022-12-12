@@ -20,7 +20,7 @@ options(future.globals.maxSize = 50000 * 1024^2) # set 50G RAM
 # Since the similarity of the cells needs to be evaluated in the overall scale expression, the overall scale needs to be performed
 data.merge <- readRDS("/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA/data.merge.pro.rds")
 DefaultAssay(data.merge) <- "RNA"
-CancerCell <- subset(data.merge, subset = cellType == "Tumor")
+CancerCell <- subset(data.merge, subset = cellType_low == "Tumor")
 source(file = "/data/active_data/lzl/RenalTumor-20200713/code/Filter.gene.R")
 CancerCell <- Filter.gene(CancerCell) #Remove genes less than 3 cells expressed
 # scale.data: do.scale = T, do.centre = T
@@ -31,16 +31,16 @@ stallion = c("1"="#EF7F48","2"="#D69100","3"="#C69900","4"="#83AD00","5"="#00BE6
 ## NMF, only analyze the cancer cell cluster, calculate in a single sample
 ## NMF requires that the input data has been standardized
 DefaultAssay(data.merge) <- "RNA"
-T1.cancer.data <- subset(data.merge, subset = cellType == "Tumor" & orig.ident == "T1") # 606 cells
+T1.cancer.data <- subset(data.merge, subset = cellType_low == "Tumor" & orig.ident == "T1") # 606 cells
 T1.cancer.data <- SCTransform(T1.cancer.data, vars.to.regress = c("nCount_RNA", "percent.mt"), return.only.var.genes = F, verbose = FALSE)
 
-T2.cancer.data <- subset(data.merge, subset = cellType == "Tumor" & orig.ident == "T2") # 2382 cells
+T2.cancer.data <- subset(data.merge, subset = cellType_low == "Tumor" & orig.ident == "T2") # 2382 cells
 T2.cancer.data <- SCTransform(T2.cancer.data, vars.to.regress = c("nCount_RNA", "percent.mt"), return.only.var.genes = F, verbose = FALSE)
 
-T3.cancer.data <- subset(data.merge, subset = cellType == "Tumor" & orig.ident == "T3") # 320 cells
+T3.cancer.data <- subset(data.merge, subset = cellType_low == "Tumor" & orig.ident == "T3") # 320 cells
 T3.cancer.data <- SCTransform(T3.cancer.data, vars.to.regress = c("nCount_RNA", "percent.mt"), return.only.var.genes = F, verbose = FALSE)
 
-T4.cancer.data <- subset(data.merge, subset = cellType == "Tumor" & orig.ident == "T4") # 256 cells
+T4.cancer.data <- subset(data.merge, subset = cellType_low == "Tumor" & orig.ident == "T4") # 256 cells
 T4.cancer.data <- SCTransform(T4.cancer.data, vars.to.regress = c("nCount_RNA", "percent.mt"), return.only.var.genes = F, verbose = FALSE)
 
 saveRDS(T1.cancer.data, file = "T1.cancer.data.rds")
