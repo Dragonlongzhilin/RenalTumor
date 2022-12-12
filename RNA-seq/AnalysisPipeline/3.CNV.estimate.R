@@ -22,23 +22,13 @@ index <- unlist(index)
 genecode.modify.order <- genecode.modify[index,]
 write.table(genecode.modify.order, "/data/activate_data/longzhilin/RenalTumor-20200713/inferCNV_result/GRCh38_gen_pos_modify_order.txt", row.name = F, col.names = F, quote = F, sep = "\t ")
 
-####Build the file to be imported on the 91 server
-##Predict the CNV of potential cancer cells based on the annotated normal cells
-library(Seurat)
-data.merge <- readRDS(file = "/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210721/scRNA/data.merge.harmony.stardard.PC50.feature3000.rds")
-
-##Extract NK/NKT cell and CD8+ T cell as reference cells
-index <- which(data.merge@meta.data$cellType %in% c("CD8+ T cell", "NK/NKT cell"))
-Normal.cell <- rownames(data.merge@meta.data)[index]
-Normal.cellType <- as.character(data.merge@meta.data$cellType[index])
-
 ###The first model: cancer cells
 ##Predict the CNV of potential cancer cells based on the annotated normal cells
 library(Seurat)
 data.merge <- readRDS(file = "/data/active_data/lzl/RenalTumor-20200713/DataAnalysis-20210803/scRNA/data.merge.pro.rds")
 
 ##Extract NK/NKT cell and CD8+ T cell as reference cells
-index <- which(data.merge@meta.data$cellType %in% c("CD8+ T cell", "NK/NKT cell"))
+index <- which(data.merge@meta.data$cellType_low %in% c("CD8+ T cell", "NK/NKT cell"))
 Normal.cell <- rownames(data.merge@meta.data)[index] # 9949 cells
 Normal.cellType <- as.character(data.merge@meta.data$cellType[index])
 
