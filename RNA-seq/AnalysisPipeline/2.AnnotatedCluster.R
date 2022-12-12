@@ -133,10 +133,6 @@ data.merge.pro$seurat_clusters <- factor(data.merge.pro$seurat_clusters, levels 
 saveRDS(data.merge.pro, "data.merge.pro.rds")
 
 pdf("2.Cluster/AnnotateCellType/cellType.pro.pdf")
-DimPlot(object = data.merge, reduction = 'tsne',label = TRUE, group.by = "cellType")+NoLegend()
-DimPlot(object = data.merge, reduction = 'tsne',label = TRUE, group.by = "cellType")
-DimPlot(object = data.merge, reduction = 'umap',label = TRUE, group.by = "cellType")+NoLegend()
-DimPlot(object = data.merge, reduction = 'umap',label = TRUE, group.by = "cellType")
 DimPlot(object = data.merge, reduction = 'tsne',label = TRUE, group.by = "cellType_low")+NoLegend()
 DimPlot(object = data.merge, reduction = 'tsne',label = TRUE, group.by = "cellType_low")
 DimPlot(object = data.merge, reduction = 'umap',label = TRUE, group.by = "cellType_low")+NoLegend()
@@ -190,7 +186,7 @@ pdf("2.Cluster/AnnotateCellType/cellType.topgenes.pdf")
 DoHeatmap(data.merge, features = unique(top.genes$gene), size = 2) + NoLegend()
 dev.off()
 
-Tumor.info <- data.merge@meta.data[which(data.merge@meta.data$cellType=="Tumor"),]
+Tumor.info <- data.merge@meta.data[which(data.merge@meta.data$cellType_low=="Tumor"),]
 cell.number <- as.data.frame(table(Tumor.info$orig.ident))
 pdf("2.Cluster/AnnotateCellType/Tumor.patient.pdf")
 ggbarplot(cell.number, x="Var1", y="Freq", fill = "Var1", color = "Var1", palette = Palettes$group_pal[1:length(unique(Tumor.info$orig.ident))],
