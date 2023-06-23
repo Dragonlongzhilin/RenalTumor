@@ -355,31 +355,3 @@ Heatmap(exp.matrix, name = "Expression", cluster_rows = T, row_split = col.split
 Heatmap(t(exp.matrix.scale), name = "Expression", cluster_rows = T, row_split = col.split, cluster_columns = T, show_row_dend = F, show_column_dend = F, row_names_gp = gpar(fontsize = 8), column_names_gp = gpar(fontsize = 8), height = unit(12, "cm"), width = unit(1.5, "cm"))
 DotPlot(sub.scRNA.harmony, features = signature.genes$Gene, cols = c("#1e90ff", "#F15F30"), group.by = "cellType", dot.scale = 3.5) + RotatedAxis() + theme(axis.text.y = element_text(size = 8)) + labs(x= "", y = "") + theme(axis.text.x = element_text(size = 8))
 dev.off()
-
-
-## version 
-signature.genes <- read.table("/data/ExtraDisk/sdd/longzhilin/Data/signatureGeneSet/Immune/M1&M2&angiogenic&phagocytic.Cheng.2021.Cell.txt", header = T, stringsAsFactors = F, sep = "\t")
-signature.list <- lapply(unique(signature.genes$Type), function(x){
-    idx <- which(signature.genes$Type == x)
-    return(signature.genes$Gene[idx])
-})
-names(signature.list) <- unique(signature.genes$Type)
-sub.scRNA.harmony <- AddModuleScore(sub.scRNA.harmony, features = signature.list)
-signature.scores <- sub.scRNA.harmony@meta.data[, grep("Cluster", colnames(sub.scRNA.harmony@meta.data))]
-colnames(signature.scores) <- names(signature.list)
-
-# violin
-signature.scores$group <- factor(sub.scRNA.harmony$cellType, levels = c("TAM-C1QB", "TAM-RGCC", "TAM-LGALS3"))
-pdf("5.Immune/Macrophage/seurat.signatureScore.pdf")
-plot.list <- lapply(colnames(signature.scores)[1:4], function(x){
-    my_comparisons <- as.list(as.data.frame(combn(levels(signature.scores$group),2)))
-    a <- signature.scores[, c(x, "group")]
-    names(a) <- c("Signature score", "group")
-    p <- ggboxplot(a, x = "group", y = "Signature score", title = x, color = "black", fill = "group", add = "jitter", add.params = list(color = "black", size = 0.1)) + 
-         xlab("") + rotate_x_text(angle = 45, vjust = 1) + scale_fill_manual(values = cellType.colors) + 
-         stat_compare_means(comparisons = my_comparisons, label = "p.signif") + NoLegend()
-    return(p)
-})
-p <- ggarrange(plotlist = plot.list[1:4],ncol = 2, nrow = 2)
-print(p)
-dev.off()
