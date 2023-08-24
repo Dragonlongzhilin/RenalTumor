@@ -54,6 +54,7 @@ scATAC.data[["Peaks"]] <- CreateChromatinAssay(
   genome = "hg38"
 )
 DefaultAssay(scATAC.data) <- "Peaks"
+scATAC.data <- RunTFIDF(scATAC.data)
 gene.activities <- GeneActivity(scATAC.data)
 # add the gene activity matrix to the Seurat object as a new assay and normalize it
 scATAC.data[['Macs2ACTIVITY']] <- CreateAssayObject(counts = gene.activities)
