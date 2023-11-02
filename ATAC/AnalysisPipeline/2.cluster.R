@@ -57,6 +57,6 @@ Harmony.scATAC.PC15 <- NormalizeData(
   object = Harmony.scATAC.PC15,
   assay = 'ACTIVITY',
   normalization.method = 'LogNormalize',
-  scale.factor = median(Harmony.scATAC.PC15$nCount_ATAC)
+  scale.factor = median(Harmony.scATAC.PC15$nCount_ACTIVITY)
 )
 saveRDS(Harmony.scATAC.PC15, file = "Harmony.scATAC.PC15.rds")
