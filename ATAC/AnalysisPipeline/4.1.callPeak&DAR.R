@@ -62,7 +62,7 @@ scATAC.data <- NormalizeData(
   object = scATAC.data,
   assay = 'Macs2ACTIVITY',
   normalization.method = 'LogNormalize',
-  scale.factor = median(scATAC.data$nCount_Peaks)
+  scale.factor = median(scATAC.data$nCount_Macs2ACTIVITY)
 )
 saveRDS(scATAC.data, "scATAC.data.pro.rds") #### macs2 calling
 
