@@ -463,21 +463,6 @@ ggscatter(metaSignature.score, x = "metaProgram1", y = "metaProgram2", add = "re
 ggscatter(metaSignature.score, x = "metaProgram1", y = "metaProgram2", color = "orig.ident", add = "reg.line", cor.coef = T)
 dev.off()
 
-#############2.6 Functional enrichment analysis based on gprofiler2
-#hypergeometric test followed by correction for multiple testing
-source(file = "/home/longzhilin/Analysis_Code/PathwayEnrichment/pathwayEnrichment.gProfiler.R")
-gProfiler.res <- pathwayEnrichment.gProfiler(geneList = meta.Signature, saveDir = paste0(getwd(), "/gProfiler"),
-                            filename = "MetaProgram", ordered_query = T, max.term.size = 350, user_threshold = 0.001, dbs = c("GO:BP", "REAC", "KEGG"), log10fdr = F)
-
-####NMF enrich the TF database using 
-source(file = "/home/longzhilin/Analysis_Code/PathwayEnrichment/pathwayEnrichment.Enrichr.R")
-pdf(paste0(getwd(), "/enrichr/enrichr.result.pdf"))
-enrichr.res <- pathwayEnrichment.Enrichr(geneList = meta.Signature, 
-                                         dbs = c("ChEA_2016", "ENCODE_and_ChEA_Consensus_TFs_from_ChIP-X", "TF_Perturbations_Followed_by_Expression", "ARCHS4_TFs_Coexp"))
-dev.off()
-write.xlsx(enrichr.res$metaProgram1, file = paste0(getwd(), "/enrichr/metaProgram1.xlsx"), rowNames = F)
-write.xlsx(enrichr.res$metaProgram2, file = paste0(getwd(), "/enrichr/metaProgram2.xlsx"), rowNames = F)
-
 #############2.8 TCGA survival
 source(file = "/home/longzhilin/Analysis_Code/code/analysis.diff.survival.TCGA.R")
 DESeq2.normalized_counts <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/TCGA/KIRC/Result/DESeq2.normalized_counts.rds")
@@ -487,21 +472,6 @@ clin.data <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/TCGA/KIRC/R
 pdf("meta.signature.survival.pdf")
 Metabolic.TCGA <- analysis.diff.survival.TCGA(interest.gene = meta.Signature$metaProgram1, diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Meta program1", Box.plot = F, meta.signature = T, single.signature = F)
 Immune.TCGA <- analysis.diff.survival.TCGA(interest.gene = meta.Signature$metaProgram2, diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "Meta program2", Box.plot = F, meta.signature = T, single.signature = F)
-dev.off()
-
-#############2.9 ICB survival
-library(ggpubr)
-source(file = "/home/longzhilin/Analysis_Code/SurvivalAnalysis/Cox.function.R")
-source(file = "/home/longzhilin/Analysis_Code/code/RCC.ICB.analysis.R")
-normalized_expression <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/ICB.therapy/normalized_expression.rds")
-patient.info.RNA <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/ICB.therapy/patient.info.RNA.rds")
-patient.info.RNA$Sex <- gsub("^F|FEMALE|Female$", 0, patient.info.RNA$Sex)
-patient.info.RNA$Sex <- gsub("^M|Male|MALE$", 1, patient.info.RNA$Sex)
-patient.info.RNA$Tumor_Sample_Primary_or_Metastasis <- gsub("PRIMARY", 0, patient.info.RNA$Tumor_Sample_Primary_or_Metastasis)
-patient.info.RNA$Tumor_Sample_Primary_or_Metastasis <- gsub("METASTASIS", 1, patient.info.RNA$Tumor_Sample_Primary_or_Metastasis)
-
-pdf("meta.signature.ICB.survival.pdf")
-cox.res <- RCC.icb.analysis(signature.list = meta.Signature, expresionMatrix = normalized_expression, clincal.info = patient.info.RNA)
 dev.off()
 
 ####cluster profiler enrichment result display
