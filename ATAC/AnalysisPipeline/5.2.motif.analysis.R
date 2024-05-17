@@ -138,7 +138,7 @@ sig.label <- sapply(order.TFs, function(x){
         return("low variation")
     }
 })
-cellType.high.specific.TF <- names(which(sig.label=="specific")) # 49
+cellType.high.specific.TF <- names(which(sig.label=="specific"))
 heatmapEM.fdr <- motifs.fdr[cellType.high.specific.TF,]
 heatmapEM.FC <- motifs.FC[cellType.high.specific.TF,]
 cellType.sd <- avg.sd[cellType.high.specific.TF]
@@ -147,7 +147,7 @@ write.xlsx(list(FDR = heatmapEM.fdr, FC = heatmapEM.FC), file = "5.Motif/Analysi
 #### Tumor specific TFs
 idx <- which(colnames(heatmapEM.FC) == "Tumor")
 index <- which(heatmapEM.FC[, idx] >= 4)
-tumor.specific.TFs <- data.frame(Name = rownames(heatmapEM.fdr)[index], FDR = heatmapEM.fdr[index, idx], avg_log2FC = heatmapEM.FC[index, idx], sd = cellType.sd[index])
+tumor.specific.TFs <- data.frame(Name = rownames(heatmapEM.fdr)[index], FDR = heatmapEM.fdr[index, idx], avg_log2FC = heatmapEM.FC[index, idx], sd = cellType.sd[index]) # 49
 heatmapEM.fdr.tumor <- heatmapEM.fdr[index,]
 heatmapEM.FC.tumor <- heatmapEM.FC[index,]
 saveRDS(tumor.specific.TFs, file = "5.Motif/Analysis/tumor.specific.TFs.rds")
