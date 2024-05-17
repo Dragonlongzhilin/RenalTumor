@@ -213,23 +213,9 @@ print(p)
 dev.off()
 
 #### functional enrichment
-cellType.all.DEGs <- readRDS("2.Cluster/AnnotateCellType/cellType.all.DEGs.rds")
-Tumor.DEGs <- cellType.all.DEGs[cellType.all.DEGs$cluster=="Tumor",]
-geneList <- Tumor.DEGs$avg_log2FC
-names(geneList) <- Tumor.DEGs$gene # 5439 genes
-source(file = "/home/longzhilin/Analysis_Code/PathwayEnrichment/clusterProfiler.GSEA.R")
-pdf("2.Cluster/AnnotateCellType/GSEA/GSEA.pdf")
-gProfiler.res <- clusterProfiler.GSEA(geneList = geneList, geneType = "SYMBOL", saveDir = paste0(getwd(), "/2.Cluster/AnnotateCellType/GSEA"))
-dev.off()
-
 ## GSEA software --- recalculate the result
 a <- data.frame(geneName = Tumor.DEGs$gene, Rank = Tumor.DEGs$avg_log2FC)
 write.csv(a, file = "2.Cluster/AnnotateCellType/GSEA/Tumor.DEGs.csv")
-# plot GSEA result
-GSEA.pos <- read.table("2.Cluster/AnnotateCellType/GSEA/Tumor.DEG.GseaPreranked/gsea_report_for_na_pos_1630233873517.tsv", header = T, stringsAsFactors = F, sep = "\t")
-
-p <- ggbarplot(tumor.up.distal, x = "wrap", y = "Hyper_Fold_Enrichment", fill = "grey", color = "grey", width = 0.4, xlab = "", orientation = "horiz", sort.val = c("asc"))+theme(legend.position="none")
-print(p)
 
 #### The proportion of various cell types in each patient
 library(plotly)
