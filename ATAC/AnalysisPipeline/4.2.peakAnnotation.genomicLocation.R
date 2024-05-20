@@ -94,21 +94,6 @@ DefaultAssay(scATAC.data) <- "Peaks"
 peak_ranges <- StringToGRanges(rownames(scATAC.data)) %>% sort
 write.table(as.data.frame(peak_ranges)[,1:3], file='4.Peak/bed/allPeaks.bed', row.names=F, col.names=F, sep='\t', quote=F)
 
-All.peakAnno <- readRDS("4.Peak/peak.annotation.ChIPseeker.rds")
-peakAnno.info <- All.peakAnno@anno
-peakAnno.info$annotation <- gsub(" .*", "", peakAnno.info$annotation)
-peakAnno.info$annotation <- gsub("'", "_UTR", peakAnno.info$annotation)
-peakAnno.info.frame <- as.data.frame(peakAnno.info)
-peakAnno.info.frame$id <- paste0(peakAnno.info.frame[,1], "-", peakAnno.info.frame[,2], "-", peakAnno.info.frame[,3])
-
-# Distal type
-distal.peak <- peakAnno.info.frame[which(peakAnno.info.frame$annotation == "Distal"),] # 52102 peaks
-write.table(distal.peak[,1:3], file='4.Peak/bed/distalPeaks.bed', row.names=F, col.names=F, sep='\t', quote=F)
-
-# proximal type
-proximal.peak <- peakAnno.info.frame[which(peakAnno.info.frame$annotation != "Distal"),] # 160224 peaks
-write.table(proximal.peak[,1:3], file='4.Peak/bed/proximalPeaks.bed', row.names=F, col.names=F, sep='\t', quote=F)
-
 ########### each cell type
 All.DARs <- readRDS("4.Peak/cellType.all.DARs.rds") # 224807 region
 idents <- levels(All.DARs$cellType)
