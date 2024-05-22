@@ -56,102 +56,6 @@ PWMatrixToProbMatrix <- function(x){
 }
 
 ################################################################################
-# Find promoters & genes with accessible TF binding sites
-################################################################################
-# settings for featureplot
-order_values <- TRUE
-reduction <- 'umap'
-
-res <- sapply(Tumor.TF.motifs$Name, function(x){
-    motif_name <- x
-    motif_ID <- motif.info$originName[match(x, motif.info$TF)] # e.g., ENSG00000008196_LINE2_TFAP2B_D_N1
-
-    # get all regions with motif binding site:
-    DefaultAssay(scATAC.sub) <- "Peaks"
-    motif_accessible <- Motifs(scATAC.sub)@data[, motif_ID]
-    motif_accessible <- names(motif_accessible)[motif_accessible > 0]
-
-    # subset this list by top features
-    motif_accessible <- motif_accessible[motif_accessible %in% VariableFeatures(scATAC.sub)]
-
-    # which of these peaks are at promoters?
-    motif_accessible_promoters <- motif_accessible[motif_accessible %in% peak.info$peaks[which(peak.info$originType == "Promoter (<=1kb)")]]
-    # which genes are associated with these promoters?
-    motif_target_genes <- peak.info$SYMBOL[match(motif_accessible_promoters, peak.info$peaks)]
-
-    # optional:
-    # which of these genes are highly expressed in snRNA-seq?
-    motif_target_genes.RNA <- motif_target_genes[motif_target_genes %in% VariableFeatures(scRNA.sub)] %>% as.character %>% unique
-
-    # remove genes that are not in the seurat obj
-    motif_target_genes <- as.character(motif_target_genes)
-    motif_target_genes <- motif_target_genes[motif_target_genes %in% rownames(scRNA.sub)]
-
-    # output 
-    target.genelists <- list(data.frame(motif_target_genes.RNA), data.frame(motif_target_genes))
-    write.xlsx(target.genelists, file = paste0("7.TF.analysis/targets/", x, "_targetGenes.xlsx"), sheetName = c("overlap with hvgs in scRNA-seq", "all target genes"))
-    
-    ################################################################################
-    # Compute module score for these target genes
-    ################################################################################
-    gene_list <- list(motif_target_genes)
-    names(gene_list) <- paste0(motif_name, '_targets')
-
-    # add in whole data
-    scRNA.data <- AddModuleScore(
-        scRNA.data,
-        features=gene_list,
-        pool = rownames(scRNA.data),
-        name=paste0(motif_name, '_targets')
-    )
-
-    ################################################################################
-    # plot module score feature plot:
-    ################################################################################
-
-    # plot promoter target gene module score for this TF:
-    p1 <- FeaturePlot(scRNA.data, features = paste0(motif_name, '_targets1'), order = order_values, reduction = reduction) +
-    scale_color_gradient2(low=scales::muted('blue'), mid='white', high=scales::muted('red')) +
-    theme(plot.margin = unit(c(0, 0, 0, 0), "in"))  +
-    ggtitle(paste0(motif_name, ' target score'))
-    pdf(paste0('7.TF.analysis/targets/', celltype, '_', motif_name, '_targets.pdf'), width=5, height=4, useDingbats=FALSE)
-    print(p1)
-
-    # plot chromVAR deviation for this TF:
-    DefaultAssay(scATAC.data) <- "chromvar"
-    p2 <- FeaturePlot(scATAC.data, features = gsub("_", "-", motif_ID), order = order_values, reduction = reduction) +
-    scale_color_gradient2(
-        low=rgb(32, 67, 37, maxColorValue=255), mid='white', high=rgb(58, 22, 72, maxColorValue=255)) +
-        theme(plot.margin = unit(c(0, 0, 0, 0), "in")) +
-        ggtitle(paste0(motif_name, ' motif'))
-    print(p2)
-
-    ################################################################################
-    # cluster violin plot for target expression modules
-    ################################################################################
-    p3 <- VlnPlot(scRNA.data, features=paste0(motif_name, '_targets1'), group.by='cellType_low', pt.size=0) +
-    stat_compare_means(method='wilcox.test', label='p.signif', label.y=0.1) +
-    geom_hline(yintercept = 0, linetype='dashed') +
-    xlab('') + ylab(paste0(motif_name, ' targets')) + ggtitle('') +
-    theme(plot.margin = unit(c(0, 0, 0, 0.1), "in"), axis.title.y=element_text(face='bold')) +
-    NoLegend()
-    print(p3)
-
-    p4 <- VlnPlot(scATAC.data, assay='chromvar', features=gsub("_", "-", motif_ID), group.by='cellType_low', pt.size=0) +
-    stat_compare_means(method='wilcox.test', label='p.signif', label.y=5)  +
-    xlab('') + ylab(paste0(motif_name, ' deviation')) + ggtitle('') +
-    theme(plot.margin = unit(c(0, 0, 0, 0.1), "in"), axis.title.y=element_text(face='bold')) +
-    NoLegend() + geom_hline(yintercept = 0, linetype='dashed')
-    print(p4)
-
-    # motif logo
-    PPM <- PWMatrixToProbMatrix(human_pwms_v2[[motif_ID]])
-    p5 <- ggseqlogo(PPM) + ggtitle(motif_name) + theme(plot.title = element_text(hjust = 0.5))
-    print(p5)    
-    dev.off()
-})
-
-################################################################################
 # Construct TF nets
 ################################################################################
 library(igraph)
@@ -167,7 +71,6 @@ cCREs$Peak1 <- gsub("_", "-", cCREs$Peak1)
 cCREs$Peak2 <- gsub("_", "-", cCREs$Peak2)
 
 interest.TFs <- c("OTP", "ISL1", "VENTX", "HOXC5")
-#interest.TFs <- c("HNF1A", "HNF1B")
 TFs.info <- motif.info[match(interest.TFs, motif.info$TF),]
 
 # for each motif, find genes:
@@ -253,7 +156,7 @@ vertex_df.list$label <- ifelse(vertex_df.list$name %in% de_targets, vertex_df.li
 vertex_df.list$label <- ifelse(vertex_df.list$name %in% as.character(motif.info$TF), vertex_df.list$name, vertex_df.list$label)
 #vertex_df.list$label <- ifelse(vertex_df.list$name %in% gwas_genes, vertex_df.list$name, vertex_df.list$label)
 
-# set node color based on control vs AD DEGs:
+# set node color based on DEGs:
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% as.character(motif.info$TF), '#1E90FF', "#FFFFFF")
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% up_genes, "#E87D72",  "#FFFFFF")
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% down_genes, '#55BCC2', vertex_df.list$color)
