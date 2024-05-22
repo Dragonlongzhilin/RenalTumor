@@ -150,13 +150,13 @@ cellType.DEGs <- scRNA.DEGs[which(scRNA.DEGs$cluster == celltype),]
 up_genes <- cellType.DEGs %>% filter(p_val_adj < 0.05 & avg_log2FC >= 1) %>% .$gene
 down_genes <- cellType.DEGs %>% filter(p_val_adj < 0.05 & avg_log2FC < -1) %>% .$gene
 
-# set node color based on DEGs:
+# remove labels if gene is not DE, or not a TF:
 de_targets <- as.character(vertex_df.list$name[vertex_df.list$name %in% unique(c(up_genes, down_genes))])
 vertex_df.list$label <- ifelse(vertex_df.list$name %in% de_targets, vertex_df.list$name, '')
 vertex_df.list$label <- ifelse(vertex_df.list$name %in% as.character(motif.info$TF), vertex_df.list$name, vertex_df.list$label)
 #vertex_df.list$label <- ifelse(vertex_df.list$name %in% gwas_genes, vertex_df.list$name, vertex_df.list$label)
 
-# remove labels if gene is not DE, or not a TF:
+# set node color based on DEGs and TF:
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% as.character(motif.info$TF), '#1E90FF', "#FFFFFF")
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% up_genes, "#E87D72",  "#FFFFFF")
 vertex_df.list$color <- ifelse(vertex_df.list$name %in% down_genes, '#55BCC2', vertex_df.list$color)
