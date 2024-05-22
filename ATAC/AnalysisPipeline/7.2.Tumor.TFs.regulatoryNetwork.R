@@ -151,25 +151,6 @@ res <- sapply(Tumor.TF.motifs$Name, function(x){
     dev.off()
 })
 
-##enrichR 功能富集分析
-source(file = "/home/longzhilin/Analysis_Code/PathwayEnrichment/pathwayEnrichment.Enrichr.R")
-interest.TFs <- c("OTP", "ISL1", "VENTX", "HOXC5")
-targetGenes <- lapply(interest.TFs, function(x){
-  genes <- read.xlsx(paste0("7.TF.analysis/targets/", x, "_targetGenes.xlsx"), sheet = 2)
-  return(as.character(genes[,1]))
-})
-names(targetGenes) <- interest.TFs
-dbs <- c("MSigDB_Hallmark_2020", "KEGG_2019_Human", "GO_Biological_Process_2018", "BioCarta_2016", "Reactome_2016")
-all.enrichr.res <- pathwayEnrichment.Enrichr(geneList = targetGenes, dbs = dbs, plot = F, orderBy = "P.value")
-combined_output <- data.frame()
-for(db in dbs){
-  all.enrichr.res[[db]]$db <- db
-  all.enrichr.res[[db]]$NMF_module <- cur_mod
-  all.enrichr.res[[db]] <-all.enrichr.res[[db]] %>% subset(P.value <= 0.01)
-  print(dim(all.enrichr.res[[db]]))
-  combined_output <- rbind(combined_output, cur_results[[db]])
-}
-
 ################################################################################
 # Construct TF nets
 ################################################################################
