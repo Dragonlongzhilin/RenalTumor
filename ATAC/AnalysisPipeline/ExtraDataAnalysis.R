@@ -73,31 +73,7 @@ RCC.object <- subset(RCC.object, subset = cellType %in% cell.Type)
 
 # extract tumor region
 RCC.object.tumor <- subset(RCC.object, subset = Category %in% c("Kidney_tumour", "Kidney_tumour_immune"))
-RCC.object <- NormalizeData(RCC.object, verbose = FALSE) # 20499 cells
 RCC.object.tumor <- NormalizeData(RCC.object.tumor, verbose = FALSE) # 14681 cells
-
-pdf("Young.Science.2018.ccRCCSample.tumorTF.expression.pdf")
-DotPlot(RCC.object, cols = c("#1e90ff", "#ff5a36"), features = tumor.TFs$Name, group.by = "cellType", dot.scale = 4) + theme(axis.text.x = element_text(size = 8, angle = 90, hjust = 1, vjust = 0.5), axis.text.y = element_text(size = 8))
-dev.off()
-pdf("Young.Science.2018.ccRCCSample.FourTF.expression.pdf", width = 5)
-DotPlot(RCC.object, cols = c("#1e90ff", "#ff5a36"), features = four.TFs, group.by = "cellType", dot.scale = 4) + RotatedAxis() + theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
-dev.off()
-
-RCC.object <- AddModuleScore(RCC.object, features = target.genes.list, name = TF.names)
-colnames(RCC.object@meta.data)[(ncol(RCC.object@meta.data)-4):ncol(RCC.object@meta.data)] <- paste0(TF.names, "_targets")
-RCC.object$cellType <- factor(RCC.object$cellType, levels = c(setdiff(names(table(RCC.object$cellType)), "Tumor"), "Tumor"))
-
-signature.scores <- RCC.object@meta.data
-pdf("Young.Science.2018.ccRCCSample.targetScore.pdf", height = 4)
-p <- lapply(TF.names, function(x){
-    p <- ggviolin(signature.scores, y=paste0(x, '_targets'), x='cellType', pt.size=0, fill = 'cellType', add = "mean_sd", error.plot = "crossbar") +
-    xlab('') + ylab(paste0(x, ' target score')) + ggtitle('') +
-    theme(plot.margin = unit(c(0, 0, 0, 0.1), "in"), axis.title.y=element_text(face='bold'), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-    NoLegend() + stat_compare_means(ref.group = "Tumor", label = "p.signif")
-    print(p)
-    return(p)
-})
-dev.off()
 
 pdf("Young.Science.2018.ccRCCRegion.tumorTF.expression.pdf")
 DotPlot(RCC.object.tumor, cols = c("#1e90ff", "#ff5a36"), features = tumor.TFs$Name, group.by = "cellType", dot.scale = 4) + theme(axis.text.x = element_text(size = 8, angle = 90, hjust = 1, vjust = 0.5), axis.text.y = element_text(size = 8))
