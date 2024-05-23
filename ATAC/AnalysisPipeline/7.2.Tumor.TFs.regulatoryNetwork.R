@@ -74,7 +74,6 @@ interest.TFs <- c("OTP", "ISL1", "VENTX", "HOXC5")
 TFs.info <- motif.info[match(interest.TFs, motif.info$TF),]
 
 # for each motif, find genes:
-use_variable_genes <- T # require the variable gene
 motif_list <- list()
 edge_df.list <- data.frame()
 vertex_df.list <- data.frame()
