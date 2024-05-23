@@ -23,7 +23,7 @@ library(clusterProfiler)
 library(org.Hs.eg.db)
 
 #####################################All Peak Annotation
-peakSet <- GetAssayData(scATAC.data, slot = "data") # 212326 x 21271
+peakSet <- GetAssayData(scATAC.data, slot = "data") 
 All.gr <- StringToGRanges(rownames(peakSet))
 #TSS (transcription start site) region, by default TSS is defined from -3kb to +3kb
 All.peakAnno <- annotatePeak(All.gr, tssRegion=c(-3000, 3000), TxDb = txdb, annoDb="org.Hs.eg.db")
