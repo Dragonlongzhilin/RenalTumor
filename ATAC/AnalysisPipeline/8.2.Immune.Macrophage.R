@@ -397,35 +397,3 @@ sub.motifs.chromVAR <- lapply(sub.motifs.chromVAR, function(x){
 names(sub.motifs.chromVAR) <- idents
 write.xlsx(sub.motifs.chromVAR, file = "8.Immune/Macrophage/sub.motifs.chromVAR.human_pwms_v2.xlsx", sheetName = idents, rowNames = T)
 saveRDS(sub.motifs.chromVAR, file = "8.Immune/Macrophage/sub.motifs.chromVAR.human_pwms_v2.rds")
-
-# Choosing a consistent change of TF
-genes <- c("SOX9", "MEF2C", "NFKB1", "RUNX3", "RELA", "ENO1", "CEBPB", "CEBPD")
-interest.signature <- as.list(genes)
-names(interest.signature) <- genes
-
-##### survival analysis in TCGA-KIRC
-source(file = "/home/longzhilin/Analysis_Code/code/analysis.diff.survival.TCGA.R")
-DESeq2.normalized_counts <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/TCGA/KIRC/Result/DESeq2.normalized_counts.rds")
-DESeq2.normalized_counts <- log2(DESeq2.normalized_counts+1)
-DESeq2.result <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/TCGA/KIRC/Result/DESeq2.result.rds")
-clin.data <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/TCGA/KIRC/Result/clin.data.rds")
-pdf("8.Immune/Macrophage/common.TFs.survival.pdf")
-res <- sapply(interest.signature, function(x){
-  a <- TCGA.TAM.C1QB <- analysis.diff.survival.TCGA(interest.gene = x, diff.gene.pro = DESeq2.result, exp.data.process = DESeq2.normalized_counts, clin.data = clin.data, EnhancedVolcano.plot = F, main = "TAM-C1QB", Box.plot = T, meta.signature = F, single.signature = T)
-})
-dev.off()
-
-##### survival analysis in ICB data
-library(ggpubr)
-source(file = "/home/longzhilin/Analysis_Code/SurvivalAnalysis/Cox.function.R")
-source(file = "/home/longzhilin/Analysis_Code/code/RCC.ICB.analysis.R")
-normalized_expression <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/ICB.therapy/normalized_expression.rds")
-patient.info.RNA <- readRDS("/data/active_data/lzl/RenalTumor-20200713/Data/ICB.therapy/patient.info.RNA.rds")
-#sex：F - 0; M - 1
-patient.info.RNA$Sex <- gsub("^F|FEMALE|Female$", 0, patient.info.RNA$Sex)
-patient.info.RNA$Sex <- gsub("^M|Male|MALE$", 1, patient.info.RNA$Sex)
-patient.info.RNA$Tumor_Sample_Primary_or_Metastasis <- gsub("PRIMARY", 0, patient.info.RNA$Tumor_Sample_Primary_or_Metastasis)
-patient.info.RNA$Tumor_Sample_Primary_or_Metastasis <- gsub("METASTASIS", 1, patient.info.RNA$Tumor_Sample_Primary_or_Metastasis)
-pdf("8.Immune/Macrophage/common.TFs.ICB.survival.pdf")
-ICB.res <- RCC.icb.analysis(signature.list = interest.signature, expresionMatrix = normalized_expression, clincal.info = patient.info.RNA)
-dev.off()
