@@ -138,7 +138,7 @@ combined <- NucleosomeSignal(object = combined)
 combined <- TSSEnrichment(object = combined, fast = FALSE, assay = 'ATAC', verbose = T)
 # add blacklist ratio and fraction of reads in peaks
 combined$pct_reads_in_peaks <- combined$peak_region_fragments / combined$passed_filters * 100
-combined$blacklist_ratio <- combined$blacklist_region_fragments / combined$peak_region_fragments
+combined$blacklist_ratio <- FractionCountsInRegion(object = combined, assay = 'ATAC', regions = blacklist_hg38_unified)
 combined$high.tss <- ifelse(combined$TSS.enrichment > 2, 'High', 'Low')
 combined$nucleosome_group <- ifelse(combined$nucleosome_signal > 4, 'NS > 4', 'NS < 4')
 pdf("1.QualityControl/merge.QC.pdf")
